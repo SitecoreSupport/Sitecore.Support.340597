@@ -13,8 +13,9 @@ namespace Sitecore.Support.XA.Foundation.Search.Providers.Azure
         {
             double distance = node.Radius.Unit == Unit.Miles ? node.Radius.Value * DistanceUtils.MILES_TO_KM : node.Radius.Value;
             string withinDistanceQuery = $"geo.distance({node.Field}, geography'Point({node.Center.Longitude} {node.Center.Latitude})') lt {distance}";
-
-            return QueryStringBuilder.FilterQueryBuilder.And(withinDistanceQuery);
+            string withinDistanceFilterQuery = QueryStringBuilder.FilterQueryBuilder.And(withinDistanceQuery);
+            string sourceQuery = HandleCloudQuery(node.SourceNode, mappingState);
+            return QueryStringBuilder.Merge(sourceQuery, withinDistanceFilterQuery, "and");
         }
     }
 }
